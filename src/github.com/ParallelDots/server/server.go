@@ -7,21 +7,28 @@ import (
 	"log"
 	"time"
 	"github.com/ParallelDots/cache"
-	"sync"
+    "sync"
+    "flag"
 )
 
+var enableCaching = flag.Bool("cache", false, "enable/disable caching default disabled")
 var c = cache.NewCache()
 
 func handler(w http.ResponseWriter,r *http.Request) {
-	if val, isPresent := c.FindResponse(r.URL.Path[1:]); isPresent {
-        fmt.Println("Found in cache")
-		fmt.Fprintf(w,val)
+    response := "Hi there, I love %s" + r.URL.Path[1:]
+    fmt.Println(*enableCaching)
+    if *enableCaching {
+	    if val, isPresent := c.FindResponse(r.URL.Path[1:]); isPresent {
+            fmt.Println("Found in cache")
+            fmt.Fprintf(w,val)
+        } else {
+            c.AddToCache(r.URL.Path[1:],response)
+        }
     } else {
-		fmt.Println("Going to sleep")
-		time.Sleep(10*time.Second)
-		fmt.Fprintf(w,"Hi there, I love %s", r.URL.Path[1:])
-		c.AddToCache(r.URL.Path[1:],"Hi there, I love " + r.URL.Path[1:])
-	}
+        fmt.Println("Going to sleep")
+        time.Sleep(30*time.Second)
+    }
+    fmt.Fprintf(w,response)
 }
 
 func startHttpServer(wg *sync.WaitGroup) *http.Server {
@@ -49,16 +56,18 @@ func main() {
     httpServerExitDone := &sync.WaitGroup{}
 
 	httpServerExitDone.Add(1)
-    
-    err := c.LoadFromFile("servercache.gob")
-    
-    if err!=nil {
-        fmt.Println("Did not find any file for the cache")
+    //enableCaching := flag.Bool("cache", true, "a bool")
+
+    if *enableCaching {
+        err := c.LoadFromFile("servercache.gob")
+        if err!=nil {
+            fmt.Println("Did not find any file for the cache")
+        }
     }
     
     srv := startHttpServer(httpServerExitDone)
 
-    time.Sleep(300 * time.Second)
+    time.Sleep(3600 * time.Second)
 
     log.Printf("main: stopping HTTP server")
 
@@ -67,8 +76,10 @@ func main() {
     }
 
     httpServerExitDone.Wait()
-	
-    c.SaveToFile("servercache.gob")
+    
+    if *enableCaching {
+        c.SaveToFile("servercache.gob")
+    }
 
     log.Printf("main: done. exiting")
 }
