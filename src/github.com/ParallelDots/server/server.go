@@ -1,28 +1,26 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 	"context"
 	"net/http"
 	"log"
 	"time"
 	"github.com/ParallelDots/cache"
-	//"runtime"
 	"sync"
 )
 
 var c = cache.NewCache()
 
 func handler(w http.ResponseWriter,r *http.Request) {
-	if val,isPresent := c.FindResponse(r.URL.Path[1:]); isPresent {
-		fmt.Println("Found in cache")
+	if val, isPresent := c.FindResponse(r.URL.Path[1:]); isPresent {
+        fmt.Println("Found in cache")
 		fmt.Fprintf(w,val)
-	} else {
+    } else {
 		fmt.Println("Going to sleep")
 		time.Sleep(10*time.Second)
 		fmt.Fprintf(w,"Hi there, I love %s", r.URL.Path[1:])
 		c.AddToCache(r.URL.Path[1:],"Hi there, I love " + r.URL.Path[1:])
-		fmt.Printf("Hi there, I love %s!\n", r.URL.Path[1:])
 	}
 }
 
@@ -60,8 +58,6 @@ func main() {
     
     srv := startHttpServer(httpServerExitDone)
 
-    //log.Printf("main: serving for 10 seconds")
-
     time.Sleep(300 * time.Second)
 
     log.Printf("main: stopping HTTP server")
@@ -70,9 +66,9 @@ func main() {
         panic(err)
     }
 
-	httpServerExitDone.Wait()
+    httpServerExitDone.Wait()
 	
-	c.SaveToFile("servercache.gob")
+    c.SaveToFile("servercache.gob")
 
     log.Printf("main: done. exiting")
 }

@@ -51,9 +51,6 @@ func (c *cache) SaveToFile(fname string) error {
 	}()
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	// for _, v := range c.cacheMap {
-	// 	gob.Register(v.Object)
-	// }
 	err = enc.Encode(&c.cacheMap)
 
 	if err != nil {
@@ -71,7 +68,6 @@ func (c *cache) Load(r io.Reader) error {
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		 for k, v := range items {
-			//c.cacheMap[k] = v
 		 	_, found := c.cacheMap[k]
 		 	if !found {
 		 		c.cacheMap[k] = v

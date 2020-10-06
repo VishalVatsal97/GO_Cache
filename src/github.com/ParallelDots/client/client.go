@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -44,11 +43,15 @@ func MakeRequest(url string, ch chan<-LogInfo, wg *sync.WaitGroup) {
 func main() {
 	
 	clientWg := &sync.WaitGroup{}
-	var temp []LogInfo
+	var (
+		temp []LogInfo
+		random_string string
+	)
+
 	rand.Seed(time.Now().UnixNano())
 	ch := make(chan LogInfo)
-	var random_string string
 	clientWg.Add(10)
+	
 	for i := 0 ; i < 10 ; i++ {
 		if i < 8 {
 			random_string = "RRHBECYGwy"
@@ -69,9 +72,8 @@ func main() {
 	}
 	
 	file, _ := json.MarshalIndent(temp, "", "")
-	//ioutil.WriteFile("C:/Users/vivatsal/Documents/ParallelDots_Assignment/src/github.com/ParallelDots/client/client.log", file, 0644)
 	
-	f, err := os.OpenFile("C:/Users/vivatsal/Documents/ParallelDots_Assignment/src/github.com/ParallelDots/client/client.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile("client.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
     if err != nil {
         log.Fatal(err)
     }
