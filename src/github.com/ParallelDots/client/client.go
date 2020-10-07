@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -29,9 +30,10 @@ type logInfo struct {
 }
 
 func makeRequest(url string, ch chan<- logInfo, wg *sync.WaitGroup) {
-
+	timestart := time.Now()
 	resp, _ := http.Get(url)
-
+	timeend := time.Now()
+	fmt.Println(timeend.Sub(timestart))
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	loginfo := logInfo{

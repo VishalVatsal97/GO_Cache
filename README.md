@@ -19,4 +19,10 @@ I used maps to store data as they provide constant lookup time. Also I used gob 
 There are many improvements that can be made like adding a timer to cache so that the unwanted/least used data can be removed from cache, serving multiple servers at once(that
 will require more synchronization) , etc.
 
-It was a fun project to work on.
+### Benchmarking Results
+
+1. Without caching for 100 requests each request takes around 30.75 - 30.95 seconds.
+2. With caching enabled for 80 requests the time is 54-70 milli seconds and for the remaining 20 requests it is
+    between 30.077 - 30.089 seconds.
+
+We see a significant improvement here from ~30 seconds to 54 milli seconds for cached requests.

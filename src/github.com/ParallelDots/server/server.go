@@ -55,8 +55,11 @@ func startHTTPServer(wg *sync.WaitGroup) *http.Server {
 
 func main() {
 	flag.Parse()
+
 	log.Printf("main: starting HTTP server")
+
 	fmt.Println(*enableCaching)
+
 	httpServerExitDone := &sync.WaitGroup{}
 
 	httpServerExitDone.Add(1)
