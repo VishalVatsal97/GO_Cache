@@ -34,6 +34,7 @@ func makeRequest(url string, ch chan<- logInfo, wg *sync.WaitGroup) {
 	resp, _ := http.Get(url)
 	timeend := time.Now()
 	fmt.Println(timeend.Sub(timestart))
+
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	loginfo := logInfo{
@@ -54,7 +55,9 @@ func main() {
 	)
 	var uniqueRequests int
 	uniqueRequests = (*numberOfRequests * 20) / 100
+
 	rand.Seed(time.Now().UnixNano())
+
 	ch := make(chan logInfo)
 	clientWg.Add(*numberOfRequests)
 
@@ -65,19 +68,22 @@ func main() {
 			randomString = "RRHBECYGwy"
 		}
 
+		//Make concurrent requests
 		go makeRequest("http://127.0.0.1:8080/"+randomString, ch, clientWg)
 	}
 
+	//Wait for all routines to finish
 	go func() {
 		clientWg.Wait()
 		close(ch)
 	}()
 
+	//Read response from channels and store in temp
 	for i := 0; i < *numberOfRequests; i++ {
 		temp = append(temp, <-ch)
 	}
 
-	file, _ := json.MarshalIndent(temp, "", "")
+	file, _ := json.MarshalIndent(temp, "", "") //Convert data to json
 
 	f, err := os.OpenFile("client.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

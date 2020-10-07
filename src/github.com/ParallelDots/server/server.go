@@ -26,11 +26,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		time.Sleep(30 * time.Second)
-		c.AddToCache(r.URL.Path[1:], response)
+		c.AddToCache(r.URL.Path[1:], response) //Add the response to cache
 	} else {
 		time.Sleep(30 * time.Second)
 	}
-	fmt.Fprintf(w, response)
+	fmt.Fprintf(w, response) // Send response
 	return
 }
 
@@ -44,7 +44,6 @@ func startHTTPServer(wg *sync.WaitGroup) *http.Server {
 
 		// always returns error. ErrServerClosed on graceful close
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			// unexpected error. port in use?
 			log.Fatalf("ListenAndServe(): %v", err)
 		}
 	}()
@@ -66,7 +65,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if *enableCaching {
-		err := c.LoadFromFile("servercache.gob")
+		err := c.LoadFromFile("servercache.gob") //Load the cache data from the file
 		if err != nil {
 			fmt.Println("Did not find any file for the cache")
 		}
@@ -84,6 +83,7 @@ func main() {
 
 	httpServerExitDone.Wait()
 
+	//Save the cache to a file
 	if *enableCaching {
 		c.SaveToFile("servercache.gob")
 	}

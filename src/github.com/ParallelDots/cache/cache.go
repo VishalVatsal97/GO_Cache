@@ -1,20 +1,21 @@
 package cache
 
 import (
+	"encoding/gob"
 	"fmt"
+	"io"
 	"os"
 	"sync"
-	"encoding/gob"
-	"io"
 )
 
+//Cache ...
 type Cache struct {
 	*cache
 }
 
 type cache struct {
-	mu			sync.RWMutex
-	cacheMap	map[string]string		
+	mu       sync.RWMutex
+	cacheMap map[string]string
 }
 
 func (c *cache) AddToCache(url string, response string) bool {
@@ -25,16 +26,15 @@ func (c *cache) AddToCache(url string, response string) bool {
 	return true
 }
 
-func (c *cache) FindResponse(request string) (string,bool) {
+func (c *cache) FindResponse(request string) (string, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	val,isPresent := c.cacheMap[request]
-	if (isPresent) {
-		return val,true
-	} else {
-		return "",false
+	val, isPresent := c.cacheMap[request]
+	if isPresent {
+		return val, true
 	}
-	return "",false
+
+	return "", false
 }
 
 func (c *cache) SaveToFile(fname string) error {
@@ -42,7 +42,7 @@ func (c *cache) SaveToFile(fname string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	enc := gob.NewEncoder(fp)
 	defer func() {
 		if x := recover(); x != nil {
@@ -67,11 +67,11 @@ func (c *cache) Load(r io.Reader) error {
 	if err == nil {
 		c.mu.Lock()
 		defer c.mu.Unlock()
-		 for k, v := range items {
-		 	_, found := c.cacheMap[k]
-		 	if !found {
-		 		c.cacheMap[k] = v
-		 	}
+		for k, v := range items {
+			_, found := c.cacheMap[k]
+			if !found {
+				c.cacheMap[k] = v
+			}
 		}
 	}
 	return err
@@ -91,11 +91,12 @@ func (c *cache) LoadFromFile(fname string) error {
 	return fp.Close()
 }
 
+//NewCache ...
 func NewCache() *Cache {
 
 	items := make(map[string]string)
-	c := &cache {
-		cacheMap : items,
+	c := &cache{
+		cacheMap: items,
 	}
 	C := &Cache{c}
 	return C

@@ -2,10 +2,11 @@
 
 ## Steps to run
 
-1. `cd src/github.com/ParallelDots`
-2. Run `go build ./...` . This will create executables for all the files in their respective directory.
-3. Run `server` and `client` executables in seperate terminals.
-4. For server use `server -cache` to enable caching as by default it is disabled and for client use `client -requests=value` to specify number of concurrent requests to send.
+1. `cd src/github.com/ParallelDots/server` and then `go build server.go`
+2. `cd src/github.com/ParallelDots/client` and then `go build client.go`
+3. The above steps will create two executables `server` or `server.exe`(if on Windows) and `client` or `client.exe`.
+4. Run `server` and `client` executables in seperate terminals.
+5. For server use `server -cache` to enable caching as by default it is disabled and for client use `client -requests=value` to specify number of concurrent requests to send.
 
 ### Approach
 
