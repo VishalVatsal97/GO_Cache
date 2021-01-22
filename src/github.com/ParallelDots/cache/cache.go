@@ -15,18 +15,25 @@ type Cache struct {
 
 type cache struct {
 	mu       sync.RWMutex
-	cacheMap map[string]string
+	cacheMap map[interface{}]interface{}
 }
 
-func (c *cache) AddToCache(url string, response string) bool {
+// func (c *cache) AddToCache(url string, response string) bool {
 
+// 	c.mu.Lock()
+// 	defer c.mu.Unlock()
+// 	c.cacheMap[url] = response
+// 	return true
+// }
+
+func (c *cache) AddToCache(key interface{}, value interface{}) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.cacheMap[url] = response
+	c.cacheMap[key] = value
 	return true
 }
 
-func (c *cache) FindResponse(request string) (string, bool) {
+func (c *cache) FindResponse(request interface{}) (interface{}, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	val, isPresent := c.cacheMap[request]
@@ -94,7 +101,7 @@ func (c *cache) LoadFromFile(fname string) error {
 //NewCache ...
 func NewCache() *Cache {
 
-	items := make(map[string]string)
+	items := make(map[interface{}]interface{})
 	c := &cache{
 		cacheMap: items,
 	}
