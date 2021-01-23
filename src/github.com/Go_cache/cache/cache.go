@@ -69,7 +69,7 @@ func (c *cache) SaveToFile(fname string) error {
 
 func (c *cache) Load(r io.Reader) error {
 	dec := gob.NewDecoder(r)
-	items := make(map[string]string)
+	items := make(map[interface{}]interface{})
 	err := dec.Decode(&items)
 	if err == nil {
 		c.mu.Lock()
